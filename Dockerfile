@@ -20,10 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-FROM ubuntu:16.04
+FROM alpine:3.6
 
-# Install Ubuntu dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yq python python-dev python-pip libssl-dev git
+# Install dependencies
+RUN apk add --no-cache python python-dev openssl-dev gcc musl-dev git && \
+    python -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip install --upgrade pip setuptools && \
+    rm -r /root/.cache
 
 # Install the proxy script
 COPY coinhive-stratum-mining-proxy.py /coinhive-stratum-mining-proxy.py

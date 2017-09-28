@@ -6,6 +6,17 @@
   <script src="https://coin-hive.com/lib/coinhive.min.js"></script>
 </head>
 <body>
+<p>Usage:</p>
+<hr>
+<pre><code>&lt;script src="https://coin-hive.com/lib/coinhive.min.js"&gt;&lt;/script&gt;</code></pre>
+<pre><code>&lt;script&gt;
+CoinHive.CONFIG.WEBSOCKET_SHARDS = [["ws://localhost:8892/proxy"]];
+var miner = new CoinHive.User('YOUR_WALLET_ADDRESS', 'YOUR_WORKER_NAME');
+&lt;/script&gt;
+</code></pre>
+<hr>
+<p><a href="https://coin-hive.com/documentation/miner" target="_blank">API Reference</a></p>
+<hr>
 <p id="sp"></p>
 <p id="th"></p>
 <script>

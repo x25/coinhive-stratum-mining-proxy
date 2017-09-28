@@ -73,8 +73,8 @@ class ProxyClient(twisted.protocols.basic.LineOnlyReceiver):
         else:
             log.msg('Queue -> Server: %s' % str(data))
             self.transport.write(data)
-            if data.endswith('\n') == False:
-                self.transport.write('\n')
+            if not data.endswith(self.delimiter):
+                self.transport.write(self.delimiter)
             self.factory.di.to_server.get().addCallback(self.dataEnqueued)
 
     def lineReceived(self, line):
@@ -130,7 +130,7 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
             login = data['params']['site_key']
             if data['params'].get('user'):
                 login = login + "." + data['params']['user']
-            self.di.to_server.put(json.dumps({'method':'login','params':{'login':login, 'pass':"x"},'id':self.di.getNextRpcId()}))
+            self.di.to_server.put(json.dumps({'method':'login','params':{'login':login,'pass':self.authPass},'id':self.di.getNextRpcId()}))
         if data.get('type') == 'submit':
             data['params']['id'] = self.di.workerId
             self.di.to_server.put(json.dumps({'method':'submit','params':data['params'],'id':self.di.getNextRpcId()}))
@@ -140,13 +140,14 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
         self.di.to_server.put(None)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.exit('Usage: python %s <stratum tcp host> <stratum tcp port>' % sys.argv[0])
+    if len(sys.argv) < 3:
+        sys.exit('Usage: python %s <stratum tcp host> <stratum tcp port> [stratum auth password]' % sys.argv[0])
     log.startLogging(sys.stdout)
 
     ws = autobahn.twisted.websocket.WebSocketServerFactory()
     ProxyServer.targetHost = sys.argv[1]
     ProxyServer.targetPort = int(sys.argv[2])
+    ProxyServer.authPass = sys.argv[3] if len(sys.argv) > 3 else 'x'
     ws.protocol = ProxyServer
 
     root = Root('./static')
