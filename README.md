@@ -2,6 +2,10 @@
 
 A proof of concept of web mining using [CoinHive](https://coin-hive.com/) JavaScript Mining library on a custom stratum XMR pool.
 
+The proxy acts like coin hive to connect to a monero mining pool. Should work with any stratum monero pool.
+
+Pros: no dev fee, adblock bypass, use any pool you like.
+
 ## Installation
 
 Docker:
@@ -44,6 +48,10 @@ Dependencies:
 ```html
 <script src="https://coin-hive.com/lib/coinhive.min.js"></script>
 ```
+
+The javascript can be saved and renamed and loaded from any url, just set the `CoinHive.CONFIG.LIB_URL = "http://yourhost/lib/"` variable.
+
+See [adblock_bypass.html](https://github.com/x25/coinhive-stratum-mining-proxy/blob/master/static/adblock_bypass.html).
 
 3. Change the `CoinHive.CONFIG.WEBSOCKET_SHARDS` config variable:
 
