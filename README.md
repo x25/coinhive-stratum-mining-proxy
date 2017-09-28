@@ -6,7 +6,7 @@ A proof of concept of web mining using [CoinHive](https://coin-hive.com/) JavaSc
 
 Docker:
 
-```bash
+```sh
 $ git clone git@github.com:x25/coinhive-stratum-mining-proxy.git
 $ cd coinhive-stratum-mining-proxy
 $ docker build -t coinhive-stratum-mining-proxy .
@@ -15,20 +15,20 @@ $ docker run -p 8892:8892 coinhive-stratum-mining-proxy <stratum tcp host> <stra
 
 eg:
 
-```bash
+```sh
 $ docker run -p 8892:8892 coinhive-stratum-mining-proxy xmr-eu1.nanopool.org 14444
 ```
 
 Linux/Mac:
 
-```bash
+```sh
 $ git clone git@github.com:x25/coinhive-stratum-mining-proxy.git
 $ cd coinhive-stratum-mining-proxy
 $ pip install -v -r requirements.txt
 $ python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port>
 ```
 
-## Dependencies:
+Dependencies:
 
 - python2
 - pip
@@ -78,7 +78,8 @@ Setup and run `coinhive-stratum-mining-proxy` with `xmr-eu1.nanopool.org 14444` 
 
 ## Links
 
-- (https://coin-hive.com/documentation/miner)[JavaScript Miner API]
+- [JavaScript Miner API](https://coin-hive.com/documentation/miner)
 
 ## License
+
 MIT
