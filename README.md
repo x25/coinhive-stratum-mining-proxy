@@ -11,7 +11,7 @@ Pros: no dev fee, adblock bypass, use any pool you like.
 Docker:
 
 ```sh
-$ git clone git@github.com:x25/coinhive-stratum-mining-proxy.git
+$ git clone https://github.com/x25/coinhive-stratum-mining-proxy.git
 $ cd coinhive-stratum-mining-proxy
 $ docker build -t coinhive-stratum-mining-proxy .
 $ docker run -p 8892:8892 coinhive-stratum-mining-proxy <stratum tcp host> <stratum tcp port>
@@ -26,10 +26,16 @@ $ docker run -p 8892:8892 coinhive-stratum-mining-proxy xmr-eu1.nanopool.org 144
 Linux/Mac:
 
 ```sh
-$ git clone git@github.com:x25/coinhive-stratum-mining-proxy.git
+$ git clone https://github.com/x25/coinhive-stratum-mining-proxy.git
 $ cd coinhive-stratum-mining-proxy
 $ pip install -v -r requirements.txt
 $ python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port>
+```
+
+eg:
+
+```sh
+$ python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444
 ```
 
 Dependencies:
@@ -49,9 +55,7 @@ Dependencies:
 <script src="https://coin-hive.com/lib/coinhive.min.js"></script>
 ```
 
-The javascript can be saved and renamed and loaded from any url, just set the `CoinHive.CONFIG.LIB_URL = "http://yourhost/lib/"` variable.
-
-See [adblock_bypass.html](https://github.com/x25/coinhive-stratum-mining-proxy/blob/master/static/adblock_bypass.html).
+The javascript can be saved/renamed and loaded from your server, see [adblock_bypass.html](https://github.com/x25/coinhive-stratum-mining-proxy/blob/master/static/adblock_bypass.html).
 
 3. Change the `CoinHive.CONFIG.WEBSOCKET_SHARDS` config variable:
 
