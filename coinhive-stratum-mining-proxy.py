@@ -41,11 +41,13 @@ def toJson(obj):
     return json.dumps(obj).encode("utf-8")
 
 class Container:
-    rpcId = 0
-    workerId = None
-    hashes = 0
-    to_client = twisted.internet.defer.DeferredQueue()
-    to_server = twisted.internet.defer.DeferredQueue()
+
+    def __init__(self):
+      self.rpcId = 0
+      self.workerId = None
+      self.hashes = 0
+      self.to_client = twisted.internet.defer.DeferredQueue()
+      self.to_server = twisted.internet.defer.DeferredQueue()
 
     def getNextRpcId(self):
         self.rpcId += 1
