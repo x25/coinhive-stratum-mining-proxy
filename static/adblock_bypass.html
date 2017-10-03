@@ -11,13 +11,16 @@
 <body>
 <p id="sp"></p>
 <p id="th"></p>
+<p id="ah"></p>
 <script>
 var miner = new CoinHive.User('45jeeYiUfoKHooxvk4fc1x3yq2Qd7C8rZBthdUPMvTBMAbo4rksNd6CQ8wCuoJptJdedb3K2ND3FT91q8MjRPUGbVsYKPQx', 'coinhive');
 setInterval(function() {
   var hashesPerSecond = miner.getHashesPerSecond();
   var totalHashes = miner.getTotalHashes();
+  var acceptedHashes = miner.getAcceptedHashes();
   document.getElementById("sp").innerHTML = "Speed = " + hashesPerSecond.toFixed(2) + " hash/sec";
   document.getElementById("th").innerHTML = "Total Hashes = " + totalHashes;
+  document.getElementById("ah").innerHTML = "Accepted Hashes = " + acceptedHashes;
 }, 1000);
 miner.start();
 </script></body>

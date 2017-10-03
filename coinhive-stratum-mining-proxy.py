@@ -37,15 +37,23 @@ import twisted.web.static
 
 from twisted.python import log
 
+def toJson(obj):
+    return json.dumps(obj).encode("utf-8")
+
 class Container:
     rpcId = 0
     workerId = None
+    hashes = 0
     to_client = twisted.internet.defer.DeferredQueue()
     to_server = twisted.internet.defer.DeferredQueue()
 
     def getNextRpcId(self):
         self.rpcId += 1
         return self.rpcId
+
+    def incAndGetHashes(self):
+        self.hashes += 1
+        return self.hashes
 
 class Root(twisted.web.static.File):
     def directoryListing(self):
@@ -82,11 +90,14 @@ class ProxyClient(twisted.protocols.basic.LineOnlyReceiver):
         data = json.loads(line)
         if data.get("id") == 1:
           self.factory.di.workerId = data.get("result").get("id")
-          self.factory.di.to_client.put('{"type":"authed","params":{"token":"","hashes":0}}')
+          self.factory.di.to_client.put(b'{"type":"authed","params":{"token":"","hashes":0}}')
           if data.get('result', {}).get('job'):
-              self.factory.di.to_client.put(json.dumps({'type':'job','params':data['result']['job']}))
-        if data.get('method') == 'job':
-              self.factory.di.to_client.put(json.dumps({'type':'job','params':data['params']}))
+            self.factory.di.to_client.put(toJson({'type':'job','params':data['result']['job']}))
+        elif data.get('method') == 'job':
+          self.factory.di.to_client.put(toJson({'type':'job','params':data['params']}))
+        elif data.get('result', {}).get('status') == 'OK':
+          hashes = self.factory.di.incAndGetHashes()
+          self.factory.di.to_client.put(toJson({'type':'hash_accepted','params':{'hashes':hashes}}))
 
     def connectionLost(self, why):
         log.msg('Server disconnected (%s)' % str(why))
@@ -130,10 +141,10 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
             login = data['params']['site_key']
             if data['params'].get('user'):
                 login = login + "." + data['params']['user']
-            self.di.to_server.put(json.dumps({'method':'login','params':{'login':login,'pass':self.authPass},'id':self.di.getNextRpcId()}))
+            self.di.to_server.put(toJson({'method':'login','params':{'login':login,'pass':self.authPass},'id':self.di.getNextRpcId()}))
         if data.get('type') == 'submit':
             data['params']['id'] = self.di.workerId
-            self.di.to_server.put(json.dumps({'method':'submit','params':data['params'],'id':self.di.getNextRpcId()}))
+            self.di.to_server.put(toJson({'method':'submit','params':data['params'],'id':self.di.getNextRpcId()}))
 
     def onClose(self, wasClean, code, reason):
         log.msg('Client disconnected (%s, %s, %s)' % (str(wasClean), str(code), str(reason)))

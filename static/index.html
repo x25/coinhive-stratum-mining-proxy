@@ -3,30 +3,33 @@
 <head>
   <meta charset="utf-8">
   <title>Miner</title>
-  <script src="https://coin-hive.com/lib/coinhive.min.js"></script>
+  <script src="https://coinhive.com/lib/coinhive.min.js"></script>
 </head>
 <body>
 <p>Usage:</p>
 <hr>
-<pre><code>&lt;script src="https://coin-hive.com/lib/coinhive.min.js"&gt;&lt;/script&gt;</code></pre>
+<pre><code>&lt;script src="https://coinhive.com/lib/coinhive.min.js"&gt;&lt;/script&gt;</code></pre>
 <pre><code>&lt;script&gt;
 CoinHive.CONFIG.WEBSOCKET_SHARDS = [["ws://localhost:8892/proxy"]];
 var miner = new CoinHive.User('YOUR_WALLET_ADDRESS', 'YOUR_WORKER_NAME');
 &lt;/script&gt;
 </code></pre>
 <hr>
-<p><a href="https://coin-hive.com/documentation/miner" target="_blank">API Reference</a></p>
+<p><a href="https://coinhive.com/documentation/miner" target="_blank">API Reference</a></p>
 <hr>
 <p id="sp"></p>
 <p id="th"></p>
+<p id="ah"></p>
 <script>
 CoinHive.CONFIG.WEBSOCKET_SHARDS = [["ws://localhost:8892/proxy"]];
 var miner = new CoinHive.User('45jeeYiUfoKHooxvk4fc1x3yq2Qd7C8rZBthdUPMvTBMAbo4rksNd6CQ8wCuoJptJdedb3K2ND3FT91q8MjRPUGbVsYKPQx', 'coinhive');
 setInterval(function() {
   var hashesPerSecond = miner.getHashesPerSecond();
   var totalHashes = miner.getTotalHashes();
+  var acceptedHashes = miner.getAcceptedHashes();
   document.getElementById("sp").innerHTML = "Speed = " + hashesPerSecond.toFixed(2) + " hash/sec";
   document.getElementById("th").innerHTML = "Total Hashes = " + totalHashes;
+  document.getElementById("ah").innerHTML = "Accepted Hashes = " + acceptedHashes;
 }, 1000);
 miner.start();
 </script></body>

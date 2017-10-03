@@ -1,8 +1,6 @@
 # CoinHive Stratum Mining Proxy
 
-A proof of concept of web mining using [CoinHive](https://coin-hive.com/) JavaScript Mining library on a custom stratum XMR pool.
-
-The proxy acts like coin hive to connect to a monero mining pool. Should work with any stratum monero pool.
+A proof of concept of web mining using CoinHive's [JavaScript Mining](https://coinhive.com/documentation/miner) library. The proxy acts like coin hive to connect to a mining pool. Should work with any monero pool based on the [Stratum Mining Protocol](https://en.bitcoin.it/wiki/Stratum_mining_protocol). You can even set up your [own pool](https://github.com/sammy007/monero-stratum).
 
 Pros: no dev fee, adblock bypass, use any pool you like.
 
@@ -40,7 +38,7 @@ $ python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444
 
 Dependencies:
 
-- python2
+- python
 - pip
 - openssl-dev
 - gcc
@@ -52,7 +50,7 @@ Dependencies:
 2. Load the Coinhive Miner
 
 ```html
-<script src="https://coin-hive.com/lib/coinhive.min.js"></script>
+<script src="https://coinhive.com/lib/coinhive.min.js"></script>
 ```
 
 The javascript can be saved/renamed and loaded from your server, see [adblock_bypass.html](https://github.com/x25/coinhive-stratum-mining-proxy/blob/master/static/adblock_bypass.html).
@@ -69,7 +67,7 @@ CoinHive.CONFIG.WEBSOCKET_SHARDS = [["ws://localhost:8892/proxy"]];
 
 ```html
 <script>
-var miner = new CoinHive.Anonymous('YOUR_WALLET_ADDRESS');
+var miner = new CoinHive.Anonymous('YOUR_MONERO_ADDRESS');
 miner.start();
 </script>
 ```
@@ -77,10 +75,11 @@ or
 
 ```html
 <script>
-var miner = new CoinHive.User('YOUR_WALLET_ADDRESS', 'YOUR_WORKER_NAME');
+var miner = new CoinHive.User('YOUR_MONERO_ADDRESS', 'YOUR_WORKER_NAME');
 miner.start();
 </script>
 ```
+the username will be used as the stratum worker name.
 
 5. Profit!
 
@@ -90,7 +89,12 @@ Setup and run `coinhive-stratum-mining-proxy` with `xmr-eu1.nanopool.org 14444` 
 
 ## Links
 
-- [JavaScript Miner API](https://coin-hive.com/documentation/miner)
+- [JavaScript Miner API](https://coinhive.com/documentation/miner)
+- [Solo mining stratum pool for Monero](https://github.com/sammy007/monero-stratum)
+
+## Disclaimer
+
+This project is not endorsed by or affiliated with coinhive.com in any way.
 
 ## License
 
