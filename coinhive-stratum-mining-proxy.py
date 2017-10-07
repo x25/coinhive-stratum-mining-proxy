@@ -58,6 +58,11 @@ class Container:
         return self.hashes
 
 class Root(twisted.web.static.File):
+
+    def render(self, request):
+        request.setHeader('Access-Control-Allow-Origin','*')
+        return super(Root, self).render(request)
+
     def directoryListing(self):
         return twisted.web.resource.ForbiddenResource()
 
