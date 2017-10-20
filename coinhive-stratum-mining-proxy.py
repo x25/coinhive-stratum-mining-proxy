@@ -147,7 +147,7 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
             mData = json.loads(data)
             #{"params": {"hashes": 1}, "type": "hash_accepted"}
             if mData["type"] == "hash_accepted":
-              details["total_hashes"] += mData["params"]["hashes"]
+              details["total_hashes"] += 1
 
             self.di.to_client.get().addCallback(self.onQueue)
 
