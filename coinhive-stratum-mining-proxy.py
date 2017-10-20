@@ -170,13 +170,18 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
 
 class SimpleStats(autobahn.twisted.resource.Resource):
     isLeaf=True
-    def __init__(self, details):
+    def __init__(self, details, passwd):
         self.details = details
         self.boot_time = time.time()
+        self.passwd = passwd 
 
     def render_GET(self, request):
-        self.details["uptime"] = time.time() - self.boot_time  
-        return json.dumps(details)
+        passwd = request.args.get("password", None)
+        if (passwd and passwd[0] == self.passwd) or not self.passwd:
+          self.details["uptime"] = time.time() - self.boot_time  
+          return json.dumps(details)
+        request.setResponseCode(403)
+        return json.dumps({"error": "unauthorized"})
 
 if __name__ == "__main__":
     details = {"total_hashes": 0, "clients": 0}
@@ -190,9 +195,9 @@ if __name__ == "__main__":
     parser.add_argument("--websocket_port", metavar="PORT", help="port to listen for websocket clients", type=int, choices=range(1,65535), default=8892)
     parser.add_argument("--ssl", help="Enables SSL for Websocket clients. (privatekey:certificate)", metavar="CERTIFICATES", dest="ssl")
     parser.add_argument("--auth", help="stratum auth password (Default: x)", default="x")
+    parser.add_argument("--passwd", help="Password for the stats page (Default: No password)", default=None)
 
     arguments = vars(parser.parse_args())
-
     log.startLogging(sys.stdout)
     ws = autobahn.twisted.websocket.WebSocketServerFactory()
     ProxyServer.targetHost = arguments["pool_host"]
@@ -201,8 +206,7 @@ if __name__ == "__main__":
     ProxyServer.details = details
     ws.protocol = ProxyServer
 
-
-    siteStats = twisted.web.server.Site(SimpleStats(details))
+    siteStats = twisted.web.server.Site(SimpleStats(details, arguments["passwd"]))
 
     root = Root('./static')
     root.putChild(b"proxy", autobahn.twisted.resource.WebSocketResource(ws))
