@@ -27,6 +27,7 @@ import json
 import os
 import socket
 import sys
+import time
 import twisted.internet.defer
 import twisted.internet.protocol
 import twisted.internet.reactor
@@ -76,7 +77,7 @@ class ProxyClient(twisted.protocols.basic.LineOnlyReceiver):
         self.factory.di.to_server.get().addCallback(self.dataEnqueued)
         try:
             self.transport.getHandle().setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-            self.transport.getHandle().setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 60)
+            self.transport.getHandle().setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 30)
             self.transport.getHandle().setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, 1)
             self.transport.getHandle().setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, 5)
         except:
@@ -145,8 +146,8 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
             self.sendMessage(data, False)
             mData = json.loads(data)
             #{"params": {"hashes": 1}, "type": "hash_accepted"}
-            if mData["type"] == "hash_Accepted":
-              details["total"] += mData["params"]["hashes"]
+            if mData["type"] == "hash_accepted":
+              details["total_hashes"] += mData["params"]["hashes"]
 
             self.di.to_client.get().addCallback(self.onQueue)
 
@@ -171,12 +172,14 @@ class SimpleStats(autobahn.twisted.resource.Resource):
     isLeaf=True
     def __init__(self, details):
         self.details = details
+        self.boot_time = time.time()
 
     def render_GET(self, request):
+        self.details["uptime"] = time.time() - self.boot_time  
         return json.dumps(details)
 
 if __name__ == "__main__":
-    details = {"total": 0, "clients": 0}
+    details = {"total_hashes": 0, "clients": 0}
 
     from argparse import ArgumentParser
     usage = "%prog <stratum tcp host> <stratum tcp port> [options]"
@@ -184,12 +187,12 @@ if __name__ == "__main__":
 
     parser.add_argument("pool_host", metavar="host", help="stratum tcp host")
     parser.add_argument("pool_port", metavar="stratum_port", help="stratum tcp port", type=int, choices=range(1,65535))
-    parser.add_argument("--websocket_port", metavar="websocket_port", help="port to listen for websocket clients", type=int, choices=range(1,65535), default=8892)
+    parser.add_argument("--websocket_port", metavar="PORT", help="port to listen for websocket clients", type=int, choices=range(1,65535), default=8892)
     parser.add_argument("--ssl", help="Enables SSL for Websocket clients. (privatekey:certificate)", metavar="CERTIFICATES", dest="ssl")
     parser.add_argument("--auth", help="stratum auth password (Default: x)", default="x")
 
     arguments = vars(parser.parse_args())
-    
+
     log.startLogging(sys.stdout)
     ws = autobahn.twisted.websocket.WebSocketServerFactory()
     ProxyServer.targetHost = arguments["pool_host"]
