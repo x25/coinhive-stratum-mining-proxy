@@ -125,7 +125,6 @@ class ProxyClientFactory(twisted.internet.protocol.ClientFactory):
 
 class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
 
-
     def onConnect(self, request):
         log.msg('Client connected (%s)' % str(request))
         details["clients"] +=1
@@ -164,24 +163,27 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
             self.di.to_server.put(toJson({'method':'submit','params':data['params'],'id':self.di.getNextRpcId()}))
 
     def onClose(self, wasClean, code, reason):
-        log.msg('Client disconnected (%s, %s, %s)' % (str(wasClean), str(code), str(reason)))
-        details["clients"] -= 1
-        self.di.to_server.put(None)
+        if hasattr(self, 'di'):
+            log.msg('Client disconnected (%s, %s, %s)' % (str(wasClean), str(code), str(reason)))
+            details["clients"] -= 1
+            self.di.to_server.put(None)
 
-class SimpleStats(autobahn.twisted.resource.Resource):
+class SimpleStats(twisted.web.resource.Resource):
+
     isLeaf=True
+
     def __init__(self, details, passwd):
         self.details = details
         self.boot_time = time.time()
-        self.passwd = passwd 
+        self.passwd = passwd
 
     def render_GET(self, request):
         passwd = request.args.get("password", None)
         if (passwd and passwd[0] == self.passwd) or not self.passwd:
           self.details["uptime"] = time.time() - self.boot_time  
-          return json.dumps(details)
+          return toJson(details)
         request.setResponseCode(403)
-        return json.dumps({"error": "unauthorized"})
+        return toJson({"error": "unauthorized"})
 
 if __name__ == "__main__":
     details = {"total_hashes": 0, "clients": 0}
@@ -199,27 +201,31 @@ if __name__ == "__main__":
 
     arguments = vars(parser.parse_args())
     log.startLogging(sys.stdout)
-    ws = autobahn.twisted.websocket.WebSocketServerFactory()
+
     ProxyServer.targetHost = arguments["pool_host"]
     ProxyServer.targetPort = arguments["pool_port"]
     ProxyServer.authPass = arguments["auth"]
     ProxyServer.details = details
+
+    ws = autobahn.twisted.websocket.WebSocketServerFactory()
     ws.protocol = ProxyServer
 
-    siteStats = twisted.web.server.Site(SimpleStats(details, arguments["passwd"]))
+    siteStats = SimpleStats(details, arguments["passwd"])
 
     root = Root('./static')
     root.putChild(b"proxy", autobahn.twisted.resource.WebSocketResource(ws))
-    root.putChild(b"stats", autobahn.twisted.resource.WebSocketResource(siteStats))
+    root.putChild(b"stats", siteStats)
 
-    site = twisted.web.server.Site(root)
+    requestFactory = twisted.web.server.Site(root)
+
     if arguments["ssl"]:
       import OpenSSL
       try:
-        twisted.internet.reactor.listenSSL(arguments["websocket_port"], site, ssl.DefaultOpenSSLContextFactory(arguments["ssl"].split(":")[0], arguments["ssl"].split(":")[1]))
+        contextFactory = ssl.DefaultOpenSSLContextFactory(arguments["ssl"].split(":")[0], arguments["ssl"].split(":")[1])
+        twisted.internet.reactor.listenSSL(arguments["websocket_port"], requestFactory, contextFactory)
       except OpenSSL.SSL.Error:
-        print "Invalid privatekey:certificate pair"
+        print("Invalid privatekey:certificate pair")
         sys.exit(1)
     else:
-      twisted.internet.reactor.listenTCP(arguments["websocket_port"], site)
+      twisted.internet.reactor.listenTCP(arguments["websocket_port"], requestFactory)
     twisted.internet.reactor.run()

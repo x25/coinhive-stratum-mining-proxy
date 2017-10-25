@@ -1,4 +1,4 @@
-autobahn==0.13.0
-twisted==16.0.0
-pyopenssl
-service_identity
+autobahn==17.9.3
+twisted==17.9.0
+pyopenssl==17.3.0
+service_identity==17.0.0

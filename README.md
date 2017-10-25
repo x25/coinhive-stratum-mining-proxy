@@ -39,10 +39,14 @@ $ python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444
 Dependencies:
 
 - python
+- python-dev
 - pip
 - openssl-dev
 - gcc
 - git
+- musl-dev
+- libffi-dev
+
 
 ## Usage
 
@@ -79,9 +83,34 @@ var miner = new CoinHive.User('YOUR_MONERO_ADDRESS', 'YOUR_WORKER_NAME');
 miner.start();
 </script>
 ```
-the username will be used as the stratum worker name.
+the username will be used as the stratum worker name (use only if your pool supports worker names).
 
 5. Profit!
+
+## SSL/Secure WebSockets
+
+Generate keypair:
+
+```sh
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 100 -nodes
+```
+
+Run proxy with parameters:
+
+```sh
+python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444 --ssl=key.pem:cert.pem
+```
+
+## Stats
+
+Proxy stats are available at ```/stats``` route:
+
+```sh
+curl -k https://localhost:8892/stats
+{"total_hashes": 0, "uptime": 15.531713008880615, "clients": 1}
+```
+
+By the default stats are not password protected, please use ``--passwd=YOUR_PASS`` to set auth password.
 
 ## Demo
 

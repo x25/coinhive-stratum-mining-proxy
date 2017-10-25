@@ -23,7 +23,7 @@
 FROM alpine:3.6
 
 # Install dependencies
-RUN apk add --no-cache python python-dev openssl-dev gcc musl-dev git && \
+RUN apk add --no-cache python python-dev openssl-dev gcc musl-dev libffi-dev git && \
     python -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
     pip install --upgrade pip setuptools && \
