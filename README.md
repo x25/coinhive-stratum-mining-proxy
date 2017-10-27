@@ -6,7 +6,7 @@ Pros: no dev fee, adblock bypass, use any pool you like.
 
 ## Installation
 
-Docker:
+Run on Docker:
 
 ```sh
 $ git clone https://github.com/x25/coinhive-stratum-mining-proxy.git
@@ -20,8 +20,18 @@ eg:
 ```sh
 $ docker run -p 8892:8892 coinhive-stratum-mining-proxy xmr-eu1.nanopool.org 14444
 ```
+Or install dependencies (```apt-get install ...``` or ```brew install ...```):
 
-Linux/Mac:
+- python
+- python-dev
+- pip
+- openssl-dev
+- gcc
+- git
+- musl-dev
+- libffi-dev
+
+and run on Linux/Mac box:
 
 ```sh
 $ git clone https://github.com/x25/coinhive-stratum-mining-proxy.git
@@ -36,18 +46,6 @@ eg:
 $ python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444
 ```
 
-Dependencies:
-
-- python
-- python-dev
-- pip
-- openssl-dev
-- gcc
-- git
-- musl-dev
-- libffi-dev
-
-
 ## Usage
 
 1. Install and Run `coinhive-stratum-mining-proxy`
@@ -59,7 +57,7 @@ Dependencies:
 
 The javascript can be saved/renamed and loaded from your server, see [adblock_bypass.html](https://github.com/x25/coinhive-stratum-mining-proxy/blob/master/static/adblock_bypass.html).
 
-3. Change the `CoinHive.CONFIG.WEBSOCKET_SHARDS` config variable:
+3. Change the ```CoinHive.CONFIG.WEBSOCKET_SHARDS``` config variable:
 
 ```html
 <script>
@@ -95,22 +93,22 @@ Generate keypair:
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 100 -nodes
 ```
 
-Run proxy with parameters:
+Run script with ```--ssl=key.pem:cert.pem``` parameter:
 
 ```sh
-python coinhive-stratum-mining-proxy.py xmr-eu1.nanopool.org 14444 --ssl=key.pem:cert.pem
+python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port> --ssl=key.pem:cert.pem
 ```
 
-## Stats
+## Statistic
 
-Proxy stats are available at ```/stats``` route:
+Simple stats are available at ```/stats``` route:
 
 ```sh
-curl -k https://localhost:8892/stats
-{"total_hashes": 0, "uptime": 15.531713008880615, "clients": 1}
+curl http://localhost:8892/stats?password=YOUR_PASS
+{"total_hashes": 0, "uptime": 15.53, "clients": 1}
 ```
 
-By the default stats are not password protected, please use ``--passwd=YOUR_PASS`` to set auth password.
+No password by default, please run with ``--password=YOUR_PASS`` argument to setup password.
 
 ## Demo
 

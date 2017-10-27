@@ -196,25 +196,23 @@ if __name__ == "__main__":
     parser.add_argument("pool_port", metavar="stratum_port", help="stratum tcp port", type=int, choices=range(1,65535))
     parser.add_argument("--websocket_port", metavar="PORT", help="port to listen for websocket clients", type=int, choices=range(1,65535), default=8892)
     parser.add_argument("--ssl", help="Enables SSL for Websocket clients. (privatekey:certificate)", metavar="CERTIFICATES", dest="ssl")
-    parser.add_argument("--auth", help="stratum auth password (Default: x)", default="x")
-    parser.add_argument("--passwd", help="Password for the stats page (Default: No password)", default=None)
+    parser.add_argument("--pool_pass", help="stratum auth password (Default: x)", default="x")
+    parser.add_argument("--password", help="Password for the stats page (Default: No password)", default=None)
 
     arguments = vars(parser.parse_args())
     log.startLogging(sys.stdout)
 
     ProxyServer.targetHost = arguments["pool_host"]
     ProxyServer.targetPort = arguments["pool_port"]
-    ProxyServer.authPass = arguments["auth"]
+    ProxyServer.authPass = arguments["pool_pass"]
     ProxyServer.details = details
 
     ws = autobahn.twisted.websocket.WebSocketServerFactory()
     ws.protocol = ProxyServer
 
-    siteStats = SimpleStats(details, arguments["passwd"])
-
     root = Root('./static')
     root.putChild(b"proxy", autobahn.twisted.resource.WebSocketResource(ws))
-    root.putChild(b"stats", siteStats)
+    root.putChild(b"stats", SimpleStats(details, arguments["password"]))
 
     requestFactory = twisted.web.server.Site(root)
 
