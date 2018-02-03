@@ -93,10 +93,10 @@ Generate keypair:
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 100 -nodes
 ```
 
-Run script with ```--ssl=key.pem:cert.pem``` parameter:
+Run script with ```--ssl=key.pem:cert.pem[:chain.pem]``` parameter:
 
 ```sh
-python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port> --ssl=key.pem:cert.pem
+python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port> --ssl=key.pem:cert.pem[:chain.pem]
 ```
 
 ## Statistic
