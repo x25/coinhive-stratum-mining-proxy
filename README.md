@@ -93,11 +93,12 @@ Generate keypair:
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 100 -nodes
 ```
 
-Run script with ```--ssl=key.pem:cert.pem[:chain.pem]``` parameter:
+Run script with ```--ssl=key.pem:cert.pem``` parameter:
 
 ```sh
-python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port> --ssl=key.pem:cert.pem[:chain.pem]
+python coinhive-stratum-mining-proxy.py <stratum tcp host> <stratum tcp port> --ssl=key.pem:cert.pem
 ```
+If you use the Let's Encrypt generated certificates or if you see the error NET::ERR_CERT_AUTHORITY_INVALID in the browser, you should find the intermediate (a.k.a. chain.pem) certificates and run the script with ```--ssl=key.pem:cert.pem:chain.pem``` parameters.
 
 ## Statistic
 
