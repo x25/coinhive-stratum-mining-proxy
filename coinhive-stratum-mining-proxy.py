@@ -42,6 +42,9 @@ from twisted.python import log
 def toJson(obj):
     return json.dumps(obj).encode("utf-8")
 
+def fromJson(str):
+    return json.loads(str.decode('utf-8'))
+
 class Container:
 
     def __init__(self):
@@ -96,7 +99,7 @@ class ProxyClient(twisted.protocols.basic.LineOnlyReceiver):
 
     def lineReceived(self, line):
         log.msg('Server -> Queue: %s' % line)
-        data = json.loads(line)
+        data = fromJson(line)
         if data.get("id") == 1:
           self.factory.di.workerId = data.get("result").get("id")
           self.factory.di.to_client.put(b'{"type":"authed","params":{"token":"","hashes":0}}')
@@ -143,7 +146,7 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
         else:
             log.msg('Queue -> Client: %s' % str(data))
             self.sendMessage(data, False)
-            mData = json.loads(data)
+            mData = fromJson(data)
             #{"params": {"hashes": 1}, "type": "hash_accepted"}
             if mData["type"] == "hash_accepted":
               details["total_hashes"] += 1
@@ -152,7 +155,7 @@ class ProxyServer(autobahn.twisted.websocket.WebSocketServerProtocol):
 
     def onMessage(self, data, isBinary):
         log.msg('Client -> Queue (%s): %s' % ('binary' if isBinary else 'text', str(data)))
-        data = json.loads(data)
+        data = fromJson(data)
         if data.get('type') == 'auth':
             login = data['params']['site_key']
             if data['params'].get('user'):
