@@ -6,7 +6,7 @@ Pros: no dev fee, adblock bypass, use any pool you like.
 
 ## Installation
 
-Run on Docker:
+Run on Docker ([docker hub repository](https://hub.docker.com/r/0x25/coinhive-stratum-mining-proxy/)):
 
 ```sh
 $ git clone https://github.com/x25/coinhive-stratum-mining-proxy.git
